@@ -1,0 +1,36 @@
+version: "2"
+services:
+  db:
+    image: postgres:9.6.0
+    environment:
+      POSTGRES_USER: communist
+      POSTGRES_DB: kpss
+    ports:
+      - "5432:5432"
+  api:
+    environment:
+      DB_HOST: db
+    build:
+      context: api
+      dockerfile: Dockerfile
+    ports:
+      - "5000:3000"
+    volumes:
+      - .:/usr/api
+    links:
+      - db
+    depends_on:
+      - db
+  web:
+    build:
+      context: src
+      dockerfile: Dockerfile
+    ports:
+      - "5001:3001"
+    volumes:
+      - .:/usr/src
+    links:
+      - api
+      - db
+    depends_on:
+      - api
